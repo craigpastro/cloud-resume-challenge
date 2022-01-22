@@ -1,0 +1,148 @@
+
+<h3>4. Static Website</h3>
+
+<p>Use S3 to host our static website.</p>
+
+<p>Create an S3 bucket. In our case we created a bucket called <code>craig-pastro-cloud-resume-challenge</code> in <code>us-west-2</code>. Make sure to turn off <code>Block all public access</code>. After it is created there are a few things to do so that we can host a static website. Click the bucket.</p>
+
+<ol>
+    <li>Enable static website hosting. This is under the properties tab.</li>
+    <li>Make the website publicly viewable. Under the permissions tab, edit the bucket policy to look like the following, where <code>Resource</code> is the arn of your own bucket.
+<pre code>
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PublicReadGetObject",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::craig-pastro-cloud-resume-challenge/*"
+        }
+    ]
+}
+</pre code>
+    </li>
+    <li>Upload website files to the bucket.</li>
+</ol>
+
+<h3>5. HTTPS</h3>
+
+<p>Use CloudFront, Amazon's CDN (Content Delivery Network) service, so that our website will be available via HTTPS and load quickly anywhere in the world.</p>
+
+<p>What we need to do is create a distribution and point it to our S3 bucket. The first thing to do is to copy the bucket website endpoint from S3. In our case <code>http://craig-pastro-cloud-resume-challenge.s3-website-us-west-2.amazonaws.com</code>.</p>
+
+<p>Next, go to CloudFront and create a new distribution. There are a few settings we need to take care of:
+<ol>
+    <li>In the origin domain paste the bucket website endpoint without the <code>http://</code>; that is, <code>craig-pastro-cloud-resume-challenge.s3-website-us-west-2.amazonaws.com</code>.</li>
+    <li>Set <code>Compress objects automatically</code> to <code>Yes</code> (it should be on by default).</li>
+    <li>Set <code>Viewer protocol policy</code> is set to <code>HTTPS only</code>.</li>
+    <li>Set <code>Default Root Object</code> to <code>index.html</code>.</li>
+</ol>
+</p>
+
+<p>Create the distribution. It will take a few of minutes to complete. After which copy the <code>distribution domain name</code> into your brower, in my case <code>https://d10jpm1xixa08n.cloudfront.net</code>, and see that it is being served over HTTPS.</p>
+
+<h3>6. DNS</h3>
+
+Let's do this later.
+
+<h3>7. Javascript</h3>
+
+<p>Javascript is okay, but I have no idea about how the DOM works, so to get started with that I found <a href="https://contactmentor.com/build-website-visitor-counter-javascript/">this tutorial</a> useful.</p> This tutorial uses local storage to "persist" the counter. In the following sections we will use DynamoDB for this purpose.
+
+<h3>12. Infrastructure as Code</h3>
+
+Looking ahead to step 12, it suggests using an <a href="https://aws.amazon.com/serverless/sam/">AWS Serverless Application Model (SAM) template</a>, to define the DynamoDB table, the API Gateway, and the Lambda function, and to deploy them using the AWS SAM CLI. We will do the next steps with this in mind.
+
+<h3>8. Database</h3>
+
+<p>Use DynamoDB to persist the value of the visitor counter.</p>
+
+<p>We will create a table called <code>cloud-resume-challenge-counter</code> with a partition key called <code>PK</code> (it will hold a key called <code>Counter</code> with the counter value). This will be provisioned using the <code>PAY_PER_REQUEST</code> billing mode.</p>
+
+<p>To create this table we add the following resource to our SAM template:
+<pre>
+DB:
+  Type: AWS::DynamoDB::Table
+  Properties:
+    TableName: cloud-resume-challenge-counter
+    AttributeDefinitions: 
+      - AttributeName: "PK"
+        AttributeType: "S"
+    KeySchema: 
+      - AttributeName: "PK"
+        KeyType: "HASH"
+    BillingMode: PAY_PER_REQUEST
+</pre>
+</p>
+
+<h3>9. API</h3>
+
+<p>Create an API that accepts requests from your web app and communicates with the database.</p>
+
+<p>We will create one Lambda that will read and update the counter. The Lambda will be triggered by two routes: `GET /` to read the value of the counter and `PATCH /` to update the counter.</p>
+
+<p>To add these routes to our template we add the following resource:
+<pre>
+CounterFunction:
+  Type: AWS::Serverless::Function
+  Properties:
+    CodeUri: counter/
+    Handler: main
+    Runtime: go1.x
+    Architectures:
+        - x86_64
+    Tracing: Active
+    Events:
+        read:
+        Type: Api
+        Properties:
+            Path: /
+            Method: GET
+        incr:
+        Type: Api
+        Properties:
+            Path: /
+            Method: PATCH
+    Policies:
+        DynamoDBCrudPolicy:
+        TableName: !Ref DB
+</pre>
+</p>
+
+<p>From the above specification we can also see that our Lambda code will live in the <code>counter</code> folder and will use the <code>go1.x</code> runtime. Furthermore we attach the <code>DynamoDBCrudPolicy</code> so that our Lambda function can do CRUD operations against our DynamoDB table.</p>
+
+
+
+
+
+
+
+
+
+Let's create a Lambda to read and write to the DynamoDB table we created in step 8. Then we will create an API gateway to trigger the lambda.
+
+However, before we do that we need to set up an IAM role so that our Lambda can perform actions, like reading and writing, on the DynamoDB table.
+
+<h4>IAM</h4>
+
+Go to the IAM console and create a role. The trusted entity is AWS service and the use case is Lambda. Then press Next: Permissions.
+
+Find the `AWSLambdaBasicExecutionRole` policy and select it. Then press Next: Tags.
+
+Since we won't add any tags, just press Next: Review.
+
+Give the role a name and description. Something like <code>Cloud-Resume-Lambda-DynamoDB</code> and "Allows the cloud resume Lambda functions to call the cloud resume DynamoDB table." respectively. Then press Create role.
+
+Finally, select the role you just created and Add inline policy. Choose DynamoDB for the service, under Read choose GetItem, and under Write choose UpdateItem.
+
+Under Resources paste the arn of the DynamoDB that we created earlier.
+
+<h4>Lambda</h4>
+
+We will create the Lambda <a href="https://go.dev/">Go</a>. It will be one Lambda which will respond to <code>GET</code> requests with the counter value and <code>PATCH</code> requests by incrementing the counter value. The code is <a href="">here</a>.
+
+Edit the <code>Execution role</code> and under <code>Execution role</code> choose "Use and existing role" and use the <code>Cloud-Resume-Lambda-DynamoDB</code> you created earlier.
+
+<h4>API Gateway</h4>
