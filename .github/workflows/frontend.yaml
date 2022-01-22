@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'public/**'
+  pull_request: # for testing purposes; remove before merge
+    branches:
+      - main
+    paths:
+      - 'public/**'
 
 jobs:
   deploy-frontend:
