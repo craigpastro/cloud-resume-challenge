@@ -1,0 +1,25 @@
+body {
+    padding: 25px 50px;
+    font-family: Arial, sans-serif;
+    background: white;
+}
+
+code { 
+    font-family: monospace;
+    background-color: #dddddd;
+    padding: 0px 2px;
+}
+
+pre {
+    font-family: monospace;
+    background-color: #dddddd;
+    border: 1px solid #999;
+    display: block;
+    padding: 5px 10px;
+}
+
+.counter {
+    font-family: monospace;
+    background-color: lightpink;
+    padding: 0px 2px;
+}
