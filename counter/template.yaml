@@ -1,0 +1,69 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  counter
+
+Globals:
+  Function:
+    Timeout: 5
+
+Resources:
+  DB:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: cloud-resume-challenge-counter
+      AttributeDefinitions: 
+        - AttributeName: "PK"
+          AttributeType: "S"
+      KeySchema: 
+        - AttributeName: "PK"
+          KeyType: "HASH"
+      BillingMode: PAY_PER_REQUEST
+
+  CounterReadFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda-read/
+      Handler: main
+      Runtime: go1.x
+      Architectures:
+        - x86_64
+      Tracing: Active
+      Events:
+        read:
+          Type: Api
+          Properties:
+            Path: /counter
+            Method: GET
+      Policies:
+        DynamoDBCrudPolicy:
+          TableName: !Ref DB
+
+  CounterIncrFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda-incr/
+      Handler: main
+      Runtime: go1.x
+      Architectures:
+        - x86_64
+      Tracing: Active
+      Events:
+        incr:
+          Type: Api
+          Properties:
+            Path: /counter
+            Method: PATCH
+      Policies:
+        DynamoDBCrudPolicy:
+          TableName: !Ref DB
+
+Outputs:
+  APIUrlPrefix:
+    Value:
+      Fn::Sub:
+      - https://${ServerlessRestApi}.execute-api.${Region}.amazonaws.com/Prod/counter/
+      - Region:
+          Ref: AWS::Region
+        ServerlessRestApi:
+          Ref: ServerlessRestApi
