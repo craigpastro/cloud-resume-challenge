@@ -4,7 +4,7 @@ build:
 	sam build
 
 deploy:
-	sam deploy
+	sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --force-upload
 
 create-table:
 	aws dynamodb create-table \
