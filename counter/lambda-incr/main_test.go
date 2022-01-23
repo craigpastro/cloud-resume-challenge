@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"testing"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -30,7 +29,7 @@ func TestHandler(t *testing.T) {
 		json.Unmarshal([]byte(resp.Body), &item)
 		next := item.Value
 
-		if next == current+1 {
+		if next != current+1 {
 			t.Fatalf("failed to increment counter. current=%d, next=%d", current, next)
 		}
 	})
