@@ -3,7 +3,7 @@
 build:
 	sam build
 
-deploy:
+deploy: build
 	sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --force-upload
 
 create-table:

@@ -6,6 +6,12 @@ Description: >
 Globals:
   Function:
     Timeout: 5
+  Api:
+    Cors:
+      AllowMethods: "'GET,PATCH,OPTIONS'"
+      AllowHeaders: "'Content-Type'"
+      AllowOrigin: "'*'" # fix this
+      AllowCredentials: "'*'"
 
 Resources:
   DB:
