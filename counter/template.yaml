@@ -6,12 +6,6 @@ Description: >
 Globals:
   Function:
     Timeout: 5
-  Api:
-    Cors:
-      AllowMethods: "'GET,PATCH,OPTIONS'"
-      AllowHeaders: "'Content-Type'"
-      AllowOrigin: "'*'" # fix this
-      AllowCredentials: "'*'"
 
 Resources:
   DB:
@@ -26,40 +20,21 @@ Resources:
           KeyType: "HASH"
       BillingMode: PAY_PER_REQUEST
 
-  CounterReadFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: lambda-read/
-      Handler: main
-      Runtime: go1.x
-      Architectures:
-        - x86_64
-      Tracing: Active
-      Events:
-        read:
-          Type: Api
-          Properties:
-            Path: /counter
-            Method: GET
-      Policies:
-        DynamoDBCrudPolicy:
-          TableName: !Ref DB
-
   CounterIncrFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: lambda-incr/
+      CodeUri: lambda/
       Handler: main
       Runtime: go1.x
       Architectures:
         - x86_64
       Tracing: Active
       Events:
-        incr:
+        Incr:
           Type: Api
           Properties:
             Path: /counter
-            Method: PATCH
+            Method: POST
       Policies:
         DynamoDBCrudPolicy:
           TableName: !Ref DB

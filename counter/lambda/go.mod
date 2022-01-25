@@ -1,4 +1,4 @@
-module lambda-read
+module lambda
 
 go 1.16
 
