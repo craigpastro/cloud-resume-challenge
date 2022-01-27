@@ -41,5 +41,5 @@ jobs:
           aws-region: us-west-2
       - run: sam build --use-container
         working-directory: ./counter
-      - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name sam-cloud-resume-challenge --s3-bucket aws-sam-cli-managed-default-samclisourcebucket-uvid4nmvzqmk 
+      - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name cloud-resume-challenge --s3-bucket aws-sam-cli-managed-default-samclisourcebucket-uvid4nmvzqmk 
         working-directory: ./counter
