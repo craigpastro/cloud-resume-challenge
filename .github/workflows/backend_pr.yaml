@@ -8,38 +8,22 @@ on:
       - 'counter/**'
 
 jobs:
-  # test:
-  #   runs-on: ubuntu-latest
-  #   services:
-  #     dynamodb:
-  #       image: amazon/dynamodb-local
-  #       ports:
-  #         - 8000:8000
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-go@v2
-  #       with:
-  #         go-version: '1.17.x'
-  #     - uses: aws-actions/configure-aws-credentials@v1
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         aws-region: us-west-2
-  #     - run: make create-table && make test
-  #       working-directory: ./counter
-          
-  build-deploy:
-    # needs: test
+  test:
     runs-on: ubuntu-latest
+    services:
+      dynamodb:
+        image: amazon/dynamodb-local
+        ports:
+          - 8000:8000
     steps:
       - uses: actions/checkout@v2
-      - uses: aws-actions/setup-sam@v1
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1.16.x'
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
-      - run: sam build --use-container
-        working-directory: ./counter
-      - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name cloud-resume-challenge
+      - run: make create-table && make test
         working-directory: ./counter
