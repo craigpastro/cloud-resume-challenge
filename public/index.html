@@ -17,19 +17,89 @@
 
 <h1>The Blog Post</h1>
 
-<p>I ran across <a href="https://twitter.com/forrestbrazeal">Forrest Brazeal</a>'s <a href="">Cloud Resume Challenge</a> and thought that it looked like a fun opportunity to learn something new, so I decided to give it a shot. This webpage is the result of that.</p>
+<p>The other day I ran across Forrest Brazeal's Cloud Resume Challenge. I like challenges, and this one seemed quite fun, so I decided to give it a shot.</p>
 
-<p>A few changes from the original challenge:
-    <ul>
-        <li>I didn't do Step 1. Certification. No particular reason.</li>
-        <li>I also didn't do Step 6. DNS. If I bought a domain, inevitable I would not renew it, then any links to my resume would be broken.</li>
-        <li>My resume is a link to my <a href="https://www.linkedin.com/in/craigpastro/">Linkedin</a>. This will prevent anything I write here from getting stale.</li>
-        <li>The Lambdas will be written in Go, as this is what I am interested in at the moment.</li>
-        <li>The blog post is written here.</li>
-    </ul>
+<p>
+In the process of completing the challenge, I did make a few changes. These are:
+<ol>
+    <li>I didn't do Step 1. Certification. No particular reason.</li>
+    <li>I also didn't do Step 6. DNS. I don't want a domain name, and I wouldn't renew it, which would mean any links to my resume would break.</li>
+    <li>My resume is a link to my Linkedin. This will prevent it from getting stale.</li>
+    <li>The Lambdas are in Go. No particular reason. If I had to do it again I would choose JavaScript.</li>
+</ol>
 </p>
 
-To be written.
+<h2>Completing the challenge</h2>
+
+<p>I am not a cloud nooby, but I still learned a lot while completing the challenge. Let's go through the steps.
+</p>
+
+<h3>1. Certification</h3>
+
+I didn't do this step.
+
+<h3>2. HTML and 3. CSS</h3>
+
+I am not an expert of HTML or CSS but I managed a little something. Emphasis on little.
+
+<h3>4. Static Website</h3>
+
+This was my first time deploying a website on S3. This step was more involved than uploading the files to an S3 bucket, but not complicated.
+
+<h3>5. HTTPS</h3>
+
+This was my first time using CloudFront. The <a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-cloudfront-to-s3-origin.html
+">docs at AWS</a> were straightforward. Not using my own domain and DNS made this step a bit simpler.
+
+<h3>6. DNS</h3>
+
+I didn't do this step either. If I did I would have used <a href="https://aws.amazon.com/route53/">Route 53</a>.
+
+<h3>7. Javascript</h3>
+
+I'm comfortable with JavaScript, but JavaScript in the browser is a different story. I found this tutorial on <a href="https://contactmentor.com/build-website-visitor-counter-javascript/">How to Build Website visitor counter in JavaScript with code helpful</a>.
+
+<h3>8. Database</h3>
+
+DynamoDB. Hey, something I know. Create a table, mark it as "on demand" (save money!), and off to the next step.
+
+<h3>9. API</h3>
+
+This was my first time using <a href="https://aws.amazon.com/api-gateway/">API Gateway</a>. It was pretty straightforward to create a route and have it trigger the Lambda I wrote in the next step.
+
+<h3>10. Python</h3>
+
+I wrote it in Go.
+
+<h3>11. Tests</h3>
+
+I wrote a test.
+
+<h3>12. Infrastructure as Code</h3>
+
+The cloud resume challenge suggests using <a href="https://aws.amazon.com/serverless/sam/">AWS Serverless Application Model</a> (SAM) for this step. I suppose one could also use Terraform. I decided to try SAM since I have never used it before. After a bit of hack and deploy, I got something running. Using SAM to create the API Gateway, the DynamoDB table, upload the Lambda, and connect them all together, turned out to be easier than clicking around the console.
+
+I would still like to learn how I could do this step in Terraform.
+
+<h3>13. Source Control</h3>
+
+Well, GitHub of course. I created a single repository for the front and backend code. You can find it <a href="https://github.com/craigpastro/cloud-resume-challenge">here</a>.
+
+<h3>14. CI/CD (Backend)</h3>
+
+I set up two GitHub actions that are triggered by changes to the backend code. One runs backend tests on any PR that changes the backend code. The other deploys the changes to AWS when the PR is merged. The second action requires permissions on AWS, so I created an IAM user for this purpose. The hardest part of this, and the next step, was knowing which permissions to grant to this user. It was a lot of trial and error.
+
+<h3>15. CI/CD (Frontend)</h3>
+
+I set up a GitHub action that is triggered by changes to the frontend code. It uploads the website data to S3 and also invalidates the CloudFront distribution. This was all new to me so it was quite exciting to see it in action.
+
+<h3>16. Blog post</h3>
+
+What you see here!
+
+<h2>What's next?</h2>
+
+Improvements would be nice. For one, my API Gateway endpoint is open to the world and not rate-limited. (🤫 Don't tell anyone.) This is not good, but I don't understand how to use authentication from a browser. This is something I should learn about. Please teach me if you can. And there are improvements that I haven't thought of yet. Please <a href="https://github.com/craigpastro/cloud-resume-challenge/issues">suggest them to me</a>.
 
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
