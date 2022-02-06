@@ -2,6 +2,7 @@ body {
     padding: 25px 50px;
     font-family: Arial, sans-serif;
     background: white;
+    line-height: 1.5;
 }
 
 code { 
@@ -22,4 +23,39 @@ pre {
     font-family: monospace;
     background-color: lightpink;
     padding: 0px 2px;
+}
+
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+}
+
+a:link {
+    text-decoration: none;
+    padding-bottom: 1px;
+    border-bottom: 1px solid lightblue;
+    color: blue;
+}
+  
+a:visited {
+    text-decoration: none;
+    padding-bottom: 1px;
+    border-bottom: 1px solid lightblue;
+    color: blue;
+}
+  
+a:hover {
+    text-decoration: none;
+    padding-bottom: 1px;
+    border-bottom: 1px solid blue;
+    color: blue;
+}
+
+a:active {
+    text-decoration: none;
+    padding-bottom: 1px;
+    border-bottom: 1px solid blue;
+    color: blue;
 }
